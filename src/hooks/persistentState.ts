@@ -13,8 +13,14 @@ export function usePersistentState<Type>({
   key,
   storageType = 'localStorage',
 }: HookProps<Type>): StorageState<Type> {
+  const actualWindow = window || {};
+
   const [state, setState] = useState<Type>(() => {
-    const oldState = window[storageType].getItem(key);
+    let oldState;
+
+    try {
+      oldState = actualWindow[storageType]?.getItem(key);
+    } catch {} // eslint-disable-line
 
     if (!oldState) return initialState;
 
@@ -31,7 +37,9 @@ export function usePersistentState<Type>({
 
     setState(newState);
 
-    window[storageType].setItem(key, JSON.stringify(newState));
+    try {
+      actualWindow[storageType]?.setItem(key, JSON.stringify(newState));
+    } catch {} // eslint-disable-line
   };
 
   return [state, saveState];
