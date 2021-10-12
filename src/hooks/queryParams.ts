@@ -4,6 +4,7 @@ import { useLocation, useHistory } from 'react-router';
 interface QueryConfig {
   clearQuery?: boolean;
   enforceLowers?: boolean;
+  paramType?: Extract<keyof Location, 'hash' | 'search'>;
 }
 
 interface QueryParams {
@@ -13,12 +14,13 @@ interface QueryParams {
 export function useQueryParams({
   clearQuery = true,
   enforceLowers,
+  paramType = 'search',
 }: QueryConfig = {}): QueryParams {
-  const { search } = useLocation();
+  const location = useLocation();
   const { replace } = useHistory();
 
   const [queryParams] = useState(() => {
-    const searchParams = new URLSearchParams(search);
+    const searchParams = new URLSearchParams(location[paramType]);
 
     const searchAsArray = Array.from(searchParams.entries());
 
