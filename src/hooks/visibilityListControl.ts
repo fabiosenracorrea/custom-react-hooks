@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 interface UseVisibilityListControl {
   toggleListVisibility: (index: number) => void;
+  resetVisibility: () => void;
   shownControl: Record<string, boolean>;
 }
 
@@ -20,14 +21,16 @@ export function objectifyItemsAndAggregate<Item, value>(
   return aggregated;
 }
 
-export function useVisibilityListControl(entities: any[]): UseVisibilityListControl {
-  const [shownControl, setShownControl] = useState(() => {
-    const indexControl = objectifyItemsAndAggregate(entities, (_, index) => ({
-      [index]: false,
-    }));
+function createVizObject(entities: any[]): Record<string, boolean> {
+  const indexControl = objectifyItemsAndAggregate(entities, (_, index) => ({
+    [index]: false,
+  }));
 
-    return indexControl;
-  });
+  return indexControl;
+}
+
+export function useVisibilityListControl(entities: any[]): UseVisibilityListControl {
+  const [shownControl, setShownControl] = useState(createVizObject(entities));
 
   useEffect(() => {
     setShownControl((oldControl) => {
@@ -46,8 +49,13 @@ export function useVisibilityListControl(entities: any[]): UseVisibilityListCont
     }));
   }, []);
 
+  const resetVisibility = useCallback(() => {
+    setShownControl(createVizObject(entities));
+  }, [entities]);
+
   return {
     toggleListVisibility,
+    resetVisibility,
     shownControl,
   };
 }
