@@ -4,7 +4,7 @@ interface UseToggle {
   isOn: boolean;
   toggle: () => void;
   turnOn: () => void;
-  turnOf: () => void;
+  turnOff: () => void;
   setIsOn: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -15,13 +15,13 @@ export function useToggle(defaultState = false): UseToggle {
 
   const turnOn = useCallback(() => setIsOn(true), []);
 
-  const turnOf = useCallback(() => setIsOn(false), []);
+  const turnOff = useCallback(() => setIsOn(false), []);
 
   return {
     isOn,
     toggle,
     setIsOn,
     turnOn,
-    turnOf,
+    turnOff,
   };
 }
