@@ -1,10 +1,10 @@
 /* eslint-disable consistent-return */
-import { RefObject, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 function useEventListener<T extends HTMLElement = HTMLDivElement, CustomWindow = WindowEventMap>(
   eventName: keyof (CustomWindow extends WindowEventMap ? CustomWindow : WindowEventMap),
   handler: (event: Event) => void,
-  element: RefObject<T | Window> = { current: window },
+  element: T | Window | Document = window,
 ): void {
   const handlerCB = useRef(handler);
 
@@ -13,14 +13,12 @@ function useEventListener<T extends HTMLElement = HTMLDivElement, CustomWindow =
   }, [handler]);
 
   useEffect(() => {
-    const targetElement = element.current;
+    if (!element?.addEventListener) return;
 
-    if (!targetElement?.addEventListener) return;
-
-    targetElement.addEventListener(eventName as string, handlerCB.current);
+    element.addEventListener(eventName as string, handlerCB.current);
 
     return () => {
-      targetElement.removeEventListener(eventName as string, handlerCB.current);
+      element.removeEventListener(eventName as string, handlerCB.current);
     };
   }, [eventName, element]);
 }
